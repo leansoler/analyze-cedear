@@ -1,0 +1,34 @@
+{
+  "name": "analyze-cedear",
+  "version": "1.0.0",
+  "description": "A Google Cloud Function that calculates the exchange rate for a given asset",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint 'src/**/*.ts' --fix",
+    "format": "prettier --write 'src/**/*.ts'",
+    "start": "functions-framework --target=TypescriptFunction",
+    "prestart": "npm run build",
+    "gcp-build": "npm run build"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^5.0.0",
+    "yahoo-finance2": "^3.11.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.51.0",
+    "@typescript-eslint/parser": "^8.51.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.7.4",
+    "rimraf": "^6.1.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.51.0"
+  }
+}
