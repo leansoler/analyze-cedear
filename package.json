@@ -9,11 +9,11 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
-    "lint": "eslint 'src/**/*.ts'",
+    "lint": "eslint 'src//**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "format": "prettier --write 'src/**/*.ts'",
-    "start": "functions-framework --target=TypescriptFunction",
-    "prestart": "npm run build",
+    "start:cedear": "npm run build && functions-framework --target=analyzeCedear",
+    "start:bond": "npm run build && functions-framework --target=analyzeBond",
     "gcp-build": "npm run build"
   },
   "dependencies": {

@@ -1,21 +1,7 @@
-import { TickerAnalysis } from './types';
-import { getDolarRates } from './clients/DolarAPIClient';
-import { getAssetPrices } from './clients/YahooFinanceClient';
-
-// A map containing the conversion ratios for some popular CEDEARs.
-// This business logic remains in the analyzer, not in the clients.
-const CEDEAR_RATIOS: { [key: string]: number } = {
-  AAPL: 10,
-  GOOGL: 29,
-  MSFT: 10,
-  AMZN: 144,
-  TSLA: 15,
-  KO: 5,
-  GGAL: 10,
-  MELI: 60,
-  WFC: 3,
-  XOM: 5,
-};
+import { TickerAnalysis } from '../../shared/types';
+import { getDolarRates } from '../../shared/clients/DolarAPIClient';
+import { getAssetPrices } from '../../shared/clients/YahooFinanceClient';
+import { CEDEAR_RATIOS } from '../../shared/constants';
 
 /**
  * Performs the core analysis for a given ticker by coordinating calls to API clients
@@ -23,7 +9,9 @@ const CEDEAR_RATIOS: { [key: string]: number } = {
  * @param {string} ticker The ticker symbol to analyze.
  * @returns {Promise<TickerAnalysis>} The complete analysis object.
  */
-export async function analyze(ticker: string): Promise<TickerAnalysis> {
+export async function analyzeCedearLogic(
+  ticker: string,
+): Promise<TickerAnalysis> {
   const tickerRoot = ticker.toUpperCase();
 
   // 1. Fetch Data from clients in parallel

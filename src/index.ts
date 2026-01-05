@@ -1,60 +1,82 @@
 import * as ff from '@google-cloud/functions-framework';
-import { analyze } from './analyzer/analyzer';
-import { AnalyzeAssetRequest } from './analyzer/types';
-import { HttpError } from './analyzer/errors';
-import logger from './analyzer/logger';
+import { analyzeCedearLogic } from './functions/analyzeCedear';
+import { analyzeBondLogic } from './functions/analyzeBond';
+import { AnalyzeAssetRequest } from './shared/types';
+import { HttpError } from './shared/errors';
+import logger from './shared/logger';
 
 /**
- * HTTP Cloud Function entry point.
- * This function handles the request and response, delegating the core logic to the 'analyze' function.
- *
- * @param {ff.Request} req The request object from Functions Framework.
- * @param {ff.Response} res The response object from Functions Framework.
+ * Cloud Function to analyze a CEDEAR.
+ * This is the HTTP wrapper for the core analysis logic.
  */
-ff.http('TypescriptFunction', async (req: ff.Request, res: ff.Response) => {
-    // 1. Validate HTTP Method
+ff.http('analyzeCedear', async (req: ff.Request, res: ff.Response) => {
+  const log = { function: 'analyzeCedear', ticker: 'N/A' };
+
+  try {
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
+      throw new HttpError('Method Not Allowed', 405);
     }
 
-    // Create a log object for structured logging.
-    const log = {
-        ticker: 'N/A',
-    };
+    const { ticker } = req.body as AnalyzeAssetRequest;
+    log.ticker = ticker || 'N/A';
+    logger.info(log, 'Request received.');
 
-    try {
-        // 2. Validate Request Body
-        const { ticker } = req.body as AnalyzeAssetRequest;
-        log.ticker = ticker || 'N/A';
-
-        logger.info(log, 'Request received, starting analysis.');
-
-        if (typeof ticker !== 'string' || ticker.length === 0) {
-            return res.status(400).json({ error: 'Ticker is required and must be a string.' });
-        }
-
-        // 3. Delegate to Core Logic
-        const analysisResult = await analyze(ticker);
-
-        // 4. Send Successful Response
-        logger.info({ ...log, result: analysisResult.analysis }, 'Analysis complete, sending response.');
-        return res.status(200).json(analysisResult);
-
-    } catch (error) {
-        // 5. Handle Errors
-        logger.error({ ...log, err: error }, 'An error occurred during execution.');
-
-        let statusCode = 500;
-        // Check if it's our custom HttpError to get the specific status code.s
-        if (error instanceof HttpError) {
-            statusCode = error.statusCode;
-        }
-
-        let errorMessage = 'An internal error occurred.';
-        if (error instanceof Error) {
-            errorMessage = error.message;
-        }
-
-        return res.status(statusCode).json({ error: errorMessage });
+    if (typeof ticker !== 'string' || ticker.length === 0) {
+      throw new HttpError('Ticker is required and must be a string.', 400);
     }
+
+    const analysisResult = await analyzeCedearLogic(ticker);
+
+    logger.info(
+      { ...log, result: analysisResult.analysis },
+      'Analysis complete.',
+    );
+    return res.status(200).json(analysisResult);
+  } catch (error) {
+    logger.error({ ...log, err: error }, 'An error occurred.');
+
+    let statusCode = 500;
+    if (error instanceof HttpError) {
+      statusCode = error.statusCode;
+    }
+
+    let errorMessage = 'An internal error occurred.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return res.status(statusCode).json({ error: errorMessage });
+  }
+});
+
+/**
+ * Cloud Function to analyze a bond (placeholder).
+ * This is the HTTP wrapper for the core analysis logic.
+ */
+ff.http('analyzeBond', async (req: ff.Request, res: ff.Response) => {
+  const log = { function: 'analyzeBond', ticker: 'N/A' };
+
+  try {
+    // This is a placeholder, so we immediately call the logic which will throw a 501.
+    const { ticker } = req.body as AnalyzeAssetRequest;
+    log.ticker = ticker || 'N/A';
+    logger.info(log, 'Request received.');
+
+    // The logic function will throw a 501 Not Implemented error.
+    await analyzeBondLogic(ticker || '');
+  } catch (error) {
+    logger.error({ ...log, err: error }, 'An error occurred.');
+
+    let statusCode = 500;
+    if (error instanceof HttpError) {
+      statusCode = error.statusCode;
+    }
+
+    let errorMessage = 'An internal error occurred.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return res.status(statusCode).json({ error: errorMessage });
+  }
 });
