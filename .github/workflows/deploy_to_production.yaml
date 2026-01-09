@@ -33,10 +33,6 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-      # --- Authenticate with Google Cloud ---
-      # This action uses Workload Identity Federation to authenticate.
-      # PRE-REQUISITE: You must set up WIF in your GCP project and add the provider
-      # and service account email as secrets to your GitHub repository.
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -58,7 +54,9 @@ jobs:
             --region us-central1 \
             --source . \
             --entry-point analyzeCedear \
-            --trigger-http
+            --trigger-http \
+            --max-instances=5 \
+            --no-allow-unauthenticated
 
       - name: Deploy analyzeBond function
         run: |
@@ -68,4 +66,6 @@ jobs:
             --region us-central1 \
             --source . \
             --entry-point analyzeBond \
-            --trigger-http
+            --trigger-http \
+            --max-instances=5 \
+            --no-allow-unauthenticated
