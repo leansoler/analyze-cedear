@@ -1,0 +1,39 @@
+openapi: 3.0.0
+info:
+  title: Bond Analyzer API
+  description: An API to analyze Argentine corporate bonds (Obligaciones Negociables).
+  version: 1.0.0
+servers:
+  - url: https://us-central1-merval-analyst.cloudfunctions.net/analyzeBond
+    description: Production Cloud Function URL
+paths:
+  /:
+    post:
+      operationId: analyzeBond
+      summary: Get a detailed analysis for a given bond ticker.
+      description: This endpoint is not yet implemented.
+      requestBody:
+        description: The ticker symbol of the bond to analyze.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticker:
+                  type: string
+                  description: The ticker symbol of the asset (e.g., MGC9O).
+                  example: MGC9O
+              required:
+                - ticker
+      responses:
+        '501':
+          description: Not Implemented. This feature is under development.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not Implemented

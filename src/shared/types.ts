@@ -1,5 +1,5 @@
 /**
- * Defines the shape of the successful analysis response.
+ * Defines the shape of the successful analysis response for a CEDEAR.
  */
 export interface TickerAnalysis {
   ticker: string;
@@ -17,8 +17,28 @@ export interface TickerAnalysis {
 }
 
 /**
- * Defines the shape of the request body.
+ * Defines the shape of the request body for the analyzeCedear function.
  */
 export interface AnalyzeAssetRequest {
   ticker?: string;
+}
+
+/**
+ * Represents a single cashflow event for a bond.
+ */
+export interface CashflowItem {
+  date: string;
+  rate: number;
+  amortization: number;
+}
+
+/**
+ * Represents the full data structure for a corporate bond (Obligación Negociable).
+ */
+export interface Bond {
+  ticker: string;
+  name: string;
+  currency: string;
+  face_value: number;
+  cashflow: CashflowItem[];
 }

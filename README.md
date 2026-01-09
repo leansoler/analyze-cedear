@@ -1,30 +1,31 @@
-# CEDEAR Analyzer API
+# CEDEAR & Bond Analyzer API
 
-A simple Google Cloud Function (2nd Gen) written in TypeScript to analyze Argentine CEDEARs.
+A multi-function TypeScript project for analyzing Argentine financial assets, designed to be deployed as Google Cloud Functions (2nd Gen).
 
-This API calculates the implied "Contado con Liquidación" (CCL) exchange rate for a given stock ticker and compares it to the live market rate to determine if the asset's valuation is currently higher ("expensive") or lower ("cheap") than the market average.
+- **`analyzeCedear`**: Calculates the implied "Contado con Liquidación" (CCL) exchange rate for a CEDEAR and compares it to a market rate.
+- **`analyzeBond`**: A placeholder for future bond analysis functionality.
 
 ---
 
 ## API Usage
 
-The API has a single endpoint that accepts a `POST` request.
+The project exposes multiple API endpoints.
 
-- **Endpoint**: `/`
+### Analyze CEDEAR
+
+- **Function Name**: `analyzeCedear`
 - **Method**: `POST`
 - **Content-Type**: `application/json`
 
-### Example Request
-
-You can use `curl` to send a request:
+#### Example Request
 
 ```bash
-curl -X POST <YOUR_FUNCTION_URL> \
+curl -X POST <YOUR_FUNCTION_URL>/analyzeCedear \
 -H "Content-Type: application/json" \
 -d '{"ticker": "AAPL"}'
 ```
 
-### Example Successful Response (200 OK)
+#### Example Successful Response (200 OK)
 
 ```json
 {
@@ -43,55 +44,107 @@ curl -X POST <YOUR_FUNCTION_URL> \
 }
 ```
 
-For a complete API contract including all response schemas and error codes, please see the `openapi.yaml` file.
+For a complete API contract, please see the `openapi.yaml` file.
 
 ---
 
-## Local Development
+## Local Development Workflow
 
 ### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Run the Function Locally
-```bash
-npm start
-```
-This command will compile the TypeScript code and start a local server using the Google Cloud Functions Framework, typically on `http://localhost:8080`.
+### 2. Running a Function
+Use the `npm run start:<function_name>` commands to run a specific function.
 
-You can then send requests to this local server for testing.
+```bash
+# To run the CEDEAR analyzer
+npm run start:cedear
+
+# To run the bond analyzer (placeholder)
+npm run start:bond
+```
+This starts a local server via the Google Cloud Functions Framework, typically on `http://localhost:8080`.
+
+### 3. Testing with the Firestore Emulator
+
+For development that involves the database, use the local Firestore emulator.
+
+**Step A: Start the Emulator**
+In a separate terminal, run:
+```bash
+npm run emu:start
+```
+Leave this process running in the background. It provides a local, offline database and a web UI to view the data.
+
+**Step B: Seed the Local Database**
+To populate your local emulator with data, use the `db:seed:emu` script. See the "Database Seeding" section below for details on the command.
+
+---
+
+## Database Seeding
+
+The project includes a script to process a data file and seed its contents into the Firestore database.
+
+### Data & Archive Structure
+
+- **Data Files**: Place your raw JSON data files in an appropriate subdirectory (e.g., `scripts/data/bonds/`).
+- **Archive**: After a file is successfully processed by the seed script, it will be moved to the `scripts/archive/` directory and renamed with a timestamp to prevent reprocessing.
+
+### How to Run the Seeder
+
+Use the `npm run db:seed` command for a live database or `npm run db:seed:emu` for the local emulator. You must provide the path to the data file you want to process.
+
+**Command Structure:**
+
+```bash
+# For local emulator
+npm run db:seed:emu -- <path/to/your/file.json>
+
+# For live database (use with caution!)
+npm run db:seed -- <path/to/your/file.json>
+```
+
+**Example:**
+```bash
+npm run db:seed:emu -- scripts/data/bonds/bonds.json
+```
 
 ---
 
 ## Deployment
 
-This function is designed to be deployed as a Google Cloud Function (2nd Gen).
+Deploy each function individually using `gcloud`.
 
 ### Prerequisites
 - Google Cloud SDK (`gcloud`) installed and authenticated.
-- A Google Cloud project with the Cloud Functions, Cloud Build, and Cloud Run APIs enabled.
+- A Google Cloud project with the necessary APIs enabled (Cloud Functions, Cloud Build, Cloud Run).
 
-### Deploy Command
+### Deploy Command Example
 
+To deploy the `analyzeCedear` function:
 ```bash
-gcloud functions deploy analyze-cedear \
+gcloud functions deploy analyzeCedear \
   --gen2 \
   --runtime nodejs20 \
   --region [YOUR_REGION] \
   --source . \
-  --entry-point TypescriptFunction \
+  --entry-point analyzeCedear \
   --trigger-http \
   --allow-unauthenticated
 ```
-**Note:** Replace `[YOUR_REGION]` with your target region (e.g., `us-central1`). The `--allow-unauthenticated` flag makes the function public; remove it and configure IAM for a private function.
+**Note:** Replace `[YOUR_REGION]`. To deploy other functions, change the function name and `--entry-point` value.
 
 ---
 
 ## Available Scripts
 
-- `npm start`: Runs the function locally for development.
-- `npm run build`: Compiles the TypeScript source code into JavaScript in the `dist/` directory.
-- `npm run lint`: Lints the codebase for errors and style issues.
-- `npm run lint:fix`: Automatically fixes all fixable linting and formatting issues.
-- `npm run clean`: Deletes the `dist/` directory.
+- **`npm run start:cedear`**: Builds and runs the `analyzeCedear` function locally.
+- **`npm run start:bond`**: Builds and runs the `analyzeBond` function locally.
+- **`npm run emu:start`**: Starts the local Firestore emulator.
+- **`npm run db:seed`**: Seeds the live Firestore database from a file.
+- **`npm run db:seed:emu`**: Seeds the local Firestore emulator from a file.
+- **`npm run build`**: Compiles the TypeScript project.
+- **`npm run lint:fix`**: Lints and automatically fixes style issues.
+- **`npm run clean`**: Deletes the `dist/` directory.
