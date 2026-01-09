@@ -48,7 +48,7 @@ jobs:
       # As requested, this deploys both functions on every push to main.
       - name: Deploy analyzeCedear function
         run: |
-          gcloud functions deploy analyzeCedear \
+          gcloud functions deploy analyze-cedear \
             --gen2 \
             --runtime nodejs24 \
             --region us-central1 \
@@ -60,7 +60,7 @@ jobs:
 
       - name: Deploy analyzeBond function
         run: |
-          gcloud functions deploy analyzeBond \
+          gcloud functions deploy analyze-bond \
             --gen2 \
             --runtime nodejs24 \
             --region us-central1 \
