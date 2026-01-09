@@ -4,14 +4,13 @@ info:
   description: An API to analyze Argentine corporate bonds (Obligaciones Negociables).
   version: 1.0.0
 servers:
-  - url: https://us-central1-merval-analyst.cloudfunctions.net/analyzeBond
-    description: Production Cloud Function URL
+  - url: https://us-central1-merval-analyst.cloudfunctions.net
 paths:
-  /:
+  /analyze-bond:
     post:
       operationId: analyzeBond
       summary: Get a detailed analysis for a given bond ticker.
-      description: This endpoint is not yet implemented.
+      description: This endpoint provides a comprehensive analysis of a corporate bond.
       requestBody:
         description: The ticker symbol of the bond to analyze.
         required: true
@@ -27,13 +26,109 @@ paths:
               required:
                 - ticker
       responses:
-        '501':
-          description: Not Implemented. This feature is under development.
+        "200":
+          description: Successful analysis of the bond.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Not Implemented
+                $ref: "#/components/schemas/BondAnalysis"
+components:
+  schemas:
+    BondAnalysis:
+      type: object
+      properties:
+        ticker:
+          type: string
+          description: The ticker symbol of the bond.
+          example: MGC9O
+        name:
+          type: string
+          description: The name of the bond.
+          example: Obligación Negociable Pampa Energía Clase 9
+        type:
+          type: string
+          description: The type of the bond.
+          example: Corporate Bond
+        currency:
+          type: string
+          description: The currency of the bond.
+          example: USD
+        market_data:
+          $ref: "#/components/schemas/MarketData"
+        technical_analysis:
+          $ref: "#/components/schemas/TechnicalAnalysis"
+        cashflow_summary:
+          $ref: "#/components/schemas/CashflowSummary"
+        verdict:
+          $ref: "#/components/schemas/Verdict"
+    MarketData:
+      type: object
+      properties:
+        price:
+          type: number
+          description: The last recorded price of the bond.
+          example: 103.50
+        last_updated:
+          type: string
+          format: date-time
+          description: The last time the price was updated.
+          example: "2024-01-09T14:30:00Z"
+    TechnicalAnalysis:
+      type: object
+      properties:
+        tir_annual_percent:
+          type: number
+          description: The annual internal rate of return (TIR).
+          example: 8.5
+        parity_percent:
+          type: number
+          description: The parity of the bond in percentage.
+          example: 101.2
+        current_yield_percent:
+          type: number
+          description: The current yield of the bond in percentage.
+          example: 9.2
+        duration_modified:
+          type: number
+          description: The modified duration of the bond.
+          example: 1.8
+        maturity_date:
+          type: string
+          format: date
+          description: The maturity date of the bond.
+          example: "2026-12-08"
+    CashflowSummary:
+      type: object
+      properties:
+        payment_frequency:
+          type: string
+          description: The frequency of the bond's payments.
+          example: Semiannual
+        next_payment_date:
+          type: string
+          format: date
+          description: The date of the next payment.
+          example: "2025-06-08"
+        next_payment_amount_per_100:
+          type: number
+          description: The amount of the next payment per 100 units of the bond.
+          example: 4.75
+        residual_value_percent:
+          type: number
+          description: The residual value of the bond in percentage.
+          example: 100
+    Verdict:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The status of the bond.
+          example: Premium
+        risk_level:
+          type: string
+          description: The risk level of the bond.
+          example: Low
+        recommendation:
+          type: string
+          description: The recommendation for the bond.
+          example: Hold

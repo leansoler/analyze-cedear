@@ -42,3 +42,55 @@ export interface Bond {
   face_value: number;
   cashflow: CashflowItem[];
 }
+
+/**
+ * Defines the shape of the market data for a bond.
+ */
+export interface MarketData {
+  price: number;
+  last_updated: string;
+}
+
+/**
+ * Defines the shape of the technical analysis for a bond.
+ */
+export interface TechnicalAnalysis {
+  tir_annual_percent: number;
+  parity_percent: number;
+  current_yield_percent: number;
+  duration_modified: number;
+  maturity_date: string;
+}
+
+/**
+ * Defines the shape of the cashflow summary for a bond.
+ */
+export interface CashflowSummary {
+  payment_frequency: string;
+  next_payment_date: string;
+  next_payment_amount_per_100: number;
+  residual_value_percent: number;
+}
+
+/**
+ * Defines the shape of the verdict for a bond.
+ */
+export interface Verdict {
+  status: 'Discount' | 'Par' | 'Premium'; // Bajo la par, A la par, Sobre la par
+  risk_level: 'Low' | 'Medium' | 'High';
+  recommendation?: string;
+}
+
+/**
+ * Defines the shape of the successful analysis response for a Bond.
+ */
+export interface BondAnalysis {
+  ticker: string;
+  name: string;
+  type: 'Corporate Bond' | 'Sovereign Bond';
+  currency: 'USD' | 'ARS';
+  market_data: MarketData;
+  technical_analysis: TechnicalAnalysis;
+  cashflow_summary: CashflowSummary;
+  verdict: Verdict;
+}

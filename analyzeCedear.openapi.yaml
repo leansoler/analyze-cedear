@@ -4,10 +4,9 @@ info:
   description: An API to analyze Argentine CEDEARs by calculating the implied exchange rate and comparing it to the market rate.
   version: 1.0.0
 servers:
-  - url: https://us-central1-merval-analyst.cloudfunctions.net/analyze-cedear
-    description: Production Cloud Function URL
+  - url: https://us-central1-merval-analyst.cloudfunctions.net
 paths:
-  /:
+  /analyze-cedear:
     post:
       operationId: analyzeCedear
       summary: Get a detailed analysis for a given CEDEAR ticker.
@@ -26,7 +25,7 @@ paths:
               required:
                 - ticker
       responses:
-        '200':
+        "200":
           description: Successful analysis of the CEDEAR.
           content:
             application/json:
@@ -71,24 +70,24 @@ paths:
                         type: boolean
                         description: A boolean flag indicating if the CEDEAR is considered cheap (gap < -1.5%).
                         example: true
-        '400':
+        "400":
           description: Bad Request - The request body is missing a valid 'ticker'.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '404':
+                $ref: "#/components/schemas/Error"
+        "404":
           description: Not Found - Price data could not be found for the requested ticker.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '500':
+                $ref: "#/components/schemas/Error"
+        "500":
           description: Internal Server Error - An unexpected error occurred on the server.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:

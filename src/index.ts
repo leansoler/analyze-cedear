@@ -63,7 +63,10 @@ ff.http('analyzeBond', async (req: ff.Request, res: ff.Response) => {
     logger.info(log, 'Request received.');
 
     // The logic function will throw a 501 Not Implemented error.
-    await analyzeBondLogic(ticker || '');
+    const analysisResult = await analyzeBondLogic();
+
+    logger.info({ ...log, result: analysisResult }, 'Analysis complete.');
+    return res.status(200).json(analysisResult);
   } catch (error) {
     logger.error({ ...log, err: error }, 'An error occurred.');
 
