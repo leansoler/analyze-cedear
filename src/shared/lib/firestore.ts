@@ -65,3 +65,11 @@ export async function batchSaveBonds(bonds: Bond[]): Promise<void> {
 
   await batch.commit();
 }
+
+export async function getBond(ticker: string): Promise<Bond | null> {
+  const bondDoc = await db.collection(BONDS_COLLECTION).doc(ticker).get();
+  if (!bondDoc.exists) {
+    return null;
+  }
+  return bondDoc.data() as Bond;
+}

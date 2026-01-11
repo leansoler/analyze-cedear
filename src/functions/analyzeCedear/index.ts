@@ -1,4 +1,4 @@
-import { TickerAnalysis } from '../../shared/types';
+import { TickerAnalysis } from './types';
 import { getDolarRates } from '../../shared/clients/DolarAPIClient';
 import { getAssetPrices } from '../../shared/clients/YahooFinanceClient';
 import { CEDEAR_RATIOS } from '../../shared/constants';
@@ -34,15 +34,15 @@ export async function analyzeCedearLogic(
   return {
     ticker: tickerRoot,
     prices: {
-      local_ars: priceArs,
-      usa_usd: priceUsd,
+      localArs: priceArs,
+      usaUsd: priceUsd,
     },
     analysis: {
-      implied_exchange_rate: Number(impliedCcl.toFixed(2)),
-      market_ccl: ccl_market,
-      gap_percent: Number(cclGap.toFixed(2)),
-      is_expensive: cclGap > 1.5,
-      is_cheap: cclGap < -1.5,
+      impliedExchangeRate: Number(impliedCcl.toFixed(2)),
+      marketCcl: ccl_market,
+      gapPercent: Number(cclGap.toFixed(2)),
+      isExpensive: cclGap > 1.5,
+      isCheap: cclGap < -1.5,
     },
   };
 }

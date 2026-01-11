@@ -24,6 +24,9 @@
     // Enables emit interoperability between CommonJS and ES Modules.
     "esModuleInterop": true,
 
+    // Add jest types to the compiler
+    "types": ["node", "jest"],
+
     // Redirect output structure to the directory.
     "outDir": "dist"
   },

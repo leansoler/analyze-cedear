@@ -15,3 +15,22 @@ export const CEDEAR_RATIOS: { [key: string]: number } = {
   WFC: 3,
   XOM: 5,
 };
+
+/**
+ * Defines the possible verdict statuses for a bond analysis.
+ * Using "as const" creates a readonly type with the exact string values,
+ * preventing typos and ensuring type safety.
+ */
+export const VERDICT_STATUS = {
+  PAR: 'Par',
+  DISCOUNT: 'Discount',
+  PREMIUM: 'Premium',
+} as const;
+
+/**
+ * Defines the parity percentage thresholds for determining a bond's verdict status.
+ */
+export const PARITY_THRESHOLDS = {
+  DISCOUNT: 98,
+  PREMIUM: 102,
+} as const;
