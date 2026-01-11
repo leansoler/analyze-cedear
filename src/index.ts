@@ -57,13 +57,15 @@ ff.http('analyzeBond', async (req: ff.Request, res: ff.Response) => {
   const log = { function: 'analyzeBond', ticker: 'N/A' };
 
   try {
-    // This is a placeholder, so we immediately call the logic which will throw a 501.
     const { ticker } = req.body as AnalyzeAssetRequest;
     log.ticker = ticker || 'N/A';
     logger.info(log, 'Request received.');
 
-    // The logic function will throw a 501 Not Implemented error.
-    const analysisResult = await analyzeBondLogic();
+    if (typeof ticker !== 'string' || ticker.length === 0) {
+      throw new HttpError('Ticker is required and must be a string.', 400);
+    }
+
+    const analysisResult = await analyzeBondLogic(ticker);
 
     logger.info({ ...log, result: analysisResult }, 'Analysis complete.');
     return res.status(200).json(analysisResult);

@@ -53,11 +53,11 @@ components:
           type: string
           description: The currency of the bond.
           example: USD
-        market_data:
+        marketData:
           $ref: "#/components/schemas/MarketData"
-        technical_analysis:
+        technicalAnalysis:
           $ref: "#/components/schemas/TechnicalAnalysis"
-        cashflow_summary:
+        cashflowSummary:
           $ref: "#/components/schemas/CashflowSummary"
         verdict:
           $ref: "#/components/schemas/Verdict"
@@ -68,7 +68,7 @@ components:
           type: number
           description: The last recorded price of the bond.
           example: 103.50
-        last_updated:
+        lastUpdated:
           type: string
           format: date-time
           description: The last time the price was updated.
@@ -76,23 +76,23 @@ components:
     TechnicalAnalysis:
       type: object
       properties:
-        tir_annual_percent:
+        tirAnnualPercent:
           type: number
           description: The annual internal rate of return (TIR).
           example: 8.5
-        parity_percent:
+        parityPercent:
           type: number
           description: The parity of the bond in percentage.
           example: 101.2
-        current_yield_percent:
+        currentYieldPercent:
           type: number
           description: The current yield of the bond in percentage.
           example: 9.2
-        duration_modified:
+        durationModified:
           type: number
           description: The modified duration of the bond.
           example: 1.8
-        maturity_date:
+        maturityDate:
           type: string
           format: date
           description: The maturity date of the bond.
@@ -100,35 +100,59 @@ components:
     CashflowSummary:
       type: object
       properties:
-        payment_frequency:
+        paymentFrequency:
           type: string
           description: The frequency of the bond's payments.
+          enum:
+            - Semiannual
+            - Annual
+            - Quarterly
+            - Monthly
+            - Other
           example: Semiannual
-        next_payment_date:
+        nextPaymentDate:
           type: string
           format: date
           description: The date of the next payment.
           example: "2025-06-08"
-        next_payment_amount_per_100:
+        nextPaymentAmountPer100:
           type: number
           description: The amount of the next payment per 100 units of the bond.
           example: 4.75
-        residual_value_percent:
+        residualValuePercent:
           type: number
           description: The residual value of the bond in percentage.
           example: 100
     Verdict:
       type: object
+      required:
+        - status
+        - riskLevel
+        - recommendation
       properties:
         status:
           type: string
-          description: The status of the bond.
+          description: The status of the bond, based on its parity.
+          enum:
+            - Discount
+            - Par
+            - Premium
           example: Premium
-        risk_level:
+        riskLevel:
           type: string
-          description: The risk level of the bond.
+          description: The estimated risk level of the bond.
+          enum:
+            - Low
+            - Medium
+            - High
           example: Low
         recommendation:
           type: string
-          description: The recommendation for the bond.
+          description: A textual recommendation for the bond.
+          enum:
+            - Buy
+            - Hold
+            - Sell
+            - Strong Buy
+            - Strong Sell
           example: Hold

@@ -30,46 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ticker:
-                    type: string
-                    description: The ticker symbol that was analyzed.
-                    example: AAPL
-                  prices:
-                    type: object
-                    properties:
-                      local_ars:
-                        type: number
-                        description: The price of the CEDEAR in Argentine Pesos (ARS).
-                        example: 17500.50
-                      usa_usd:
-                        type: number
-                        description: The price of the underlying asset in US Dollars (USD).
-                        example: 175.00
-                  analysis:
-                    type: object
-                    properties:
-                      implied_exchange_rate:
-                        type: number
-                        description: The implied "Contado con Liquidación" (CCL) exchange rate calculated from the asset prices and ratio.
-                        example: 1000.03
-                      market_ccl:
-                        type: number
-                        description: The market CCL rate fetched from a reliable source.
-                        example: 1050.25
-                      gap_percent:
-                        type: number
-                        description: The percentage difference between the implied rate and the market rate. A positive value means the CEDEAR is "expensive" in relative terms.
-                        example: -4.78
-                      is_expensive:
-                        type: boolean
-                        description: A boolean flag indicating if the CEDEAR is considered expensive (gap > 1.5%).
-                        example: false
-                      is_cheap:
-                        type: boolean
-                        description: A boolean flag indicating if the CEDEAR is considered cheap (gap < -1.5%).
-                        example: true
+                $ref: "#/components/schemas/TickerAnalysis"
         "400":
           description: Bad Request - The request body is missing a valid 'ticker'.
           content:
@@ -91,6 +52,47 @@ paths:
 
 components:
   schemas:
+    TickerAnalysis:
+      type: object
+      properties:
+        ticker:
+          type: string
+          description: The ticker symbol that was analyzed.
+          example: AAPL
+        prices:
+          type: object
+          properties:
+            localArs:
+              type: number
+              description: The price of the CEDEAR in Argentine Pesos (ARS).
+              example: 17500.50
+            usaUsd:
+              type: number
+              description: The price of the underlying asset in US Dollars (USD).
+              example: 175.00
+        analysis:
+          type: object
+          properties:
+            impliedExchangeRate:
+              type: number
+              description: The implied "Contado con Liquidación" (CCL) exchange rate calculated from the asset prices and ratio.
+              example: 1000.03
+            marketCcl:
+              type: number
+              description: The market CCL rate fetched from a reliable source.
+              example: 1050.25
+            gapPercent:
+              type: number
+              description: The percentage difference between the implied rate and the market rate. A positive value means the CEDEAR is "expensive" in relative terms.
+              example: -4.78
+            isExpensive:
+              type: boolean
+              description: A boolean flag indicating if the CEDEAR is considered expensive (gap > 1.5%).
+              example: false
+            isCheap:
+              type: boolean
+              description: A boolean flag indicating if the CEDEAR is considered cheap (gap < -1.5%).
+              example: true
     Error:
       type: object
       properties:
