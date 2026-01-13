@@ -4,6 +4,7 @@ import { analyzeBondLogic } from './functions/analyzeBond';
 import { AnalyzeAssetRequest } from './shared/types';
 import { HttpError } from './shared/errors';
 import logger from './shared/logger';
+import { scrapInvertirOnline } from './functions/scrapInvertirOnline';
 
 /**
  * Cloud Function to analyze a CEDEAR.
@@ -69,6 +70,34 @@ ff.http('analyzeBond', async (req: ff.Request, res: ff.Response) => {
 
     logger.info({ ...log, result: analysisResult }, 'Analysis complete.');
     return res.status(200).json(analysisResult);
+  } catch (error) {
+    logger.error({ ...log, err: error }, 'An error occurred.');
+
+    let statusCode = 500;
+    if (error instanceof HttpError) {
+      statusCode = error.statusCode;
+    }
+
+    let errorMessage = 'An internal error occurred.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return res.status(statusCode).json({ error: errorMessage });
+  }
+});
+
+ff.http('scrapInvertirOnline', async (req: ff.Request, res: ff.Response) => {
+  const log = { function: 'scrapInvertirOnline' };
+
+  try {
+    logger.info(log, 'Request received.');
+
+    const result = await scrapInvertirOnline();
+
+    logger.info({ ...log, result: result }, 'Scraping complete.');
+
+    return res.status(200).json(result);
   } catch (error) {
     logger.error({ ...log, err: error }, 'An error occurred.');
 
