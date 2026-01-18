@@ -8,7 +8,7 @@ const isProduction = process.env.NODE_ENV === 'production';
  * - In development, it uses 'pino-pretty' for human-readable, colorful output.
  */
 const logger = pino({
-  level: 'info',
+  level: process.env.LOG_LEVEL || 'info',
   // Only use pretty printing in development
   transport: isProduction
     ? undefined
