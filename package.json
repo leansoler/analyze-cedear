@@ -19,7 +19,8 @@
     "emu:start": "firebase emulators:start --only firestore --project=demo-merval-analyst",
     "db:seed:emu": "FIRESTORE_EMULATOR_HOST=localhost:8080 npm run db:seed --",
     "test": "jest",
-    "gcp-build": "npm run build"
+    "gcp-build": "npm run build",
+    "prepare": "husky"
   },
   "dependencies": {
     "@google-cloud/firestore": "^8.0.0",
@@ -36,6 +37,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.1.7",
     "jest": "^28.1.3",
     "pino-pretty": "^13.1.3",
     "prettier": "^3.7.4",
