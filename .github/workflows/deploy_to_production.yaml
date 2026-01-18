@@ -78,4 +78,5 @@ jobs:
             --max-instances=1 \
             --memory=1024MB \
             --timeout=60s \
+            --set-env-vars IS_LOCAL=false,LOG_LEVEL=debug \
             --no-allow-unauthenticated

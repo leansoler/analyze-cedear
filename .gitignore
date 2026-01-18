@@ -3,3 +3,4 @@ dist/
 .eslintcache
 data/
 *.log
+.env

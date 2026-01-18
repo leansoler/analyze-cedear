@@ -10,6 +10,8 @@ const firestoreSettings: Settings = {};
 if (process.env.FIRESTORE_EMULATOR_HOST) {
   console.log('Connecting to Firestore emulator...');
   firestoreSettings.projectId = 'demo-merval-analyst';
+} else {
+  firestoreSettings.projectId = 'merval-analyst';
 }
 
 // Initialize Firestore with our settings.
@@ -19,6 +21,11 @@ const db = new Firestore(firestoreSettings);
 
 // Define collection names
 const BONDS_COLLECTION = 'bonds';
+
+/**
+ * A dictionary where keys are ticker symbols and values are their market prices.
+ */
+type MarketData = Record<string, number>;
 
 /**
  * Saves an array of Bond documents to Firestore in a single batch, avoiding duplicates.
@@ -72,4 +79,52 @@ export async function getBond(ticker: string): Promise<Bond | null> {
     return null;
   }
   return bondDoc.data() as Bond;
+}
+
+/**
+ * Updates the prices of bonds in Firestore based on scraped market data.
+ * @param {MarketData} marketData A dictionary mapping ticker symbols to their new prices.
+ * @returns {Promise<{ updatedCount: number }>} The number of documents that were updated.
+ */
+export async function batchUpdateBondPrices(
+  marketData: MarketData,
+): Promise<{ updatedCount: number }> {
+  console.log('Fetching bonds from Firestore to update prices...');
+  const bondsSnapshot = await db.collection(BONDS_COLLECTION).get();
+  const batch = db.batch();
+  let updatedCount = 0;
+
+  console.log(
+    `Comparing ${bondsSnapshot.size} bonds from DB with ${Object.keys(marketData).length} scraped prices.`,
+  );
+
+  for (const doc of bondsSnapshot.docs) {
+    const ticker = doc.id;
+    const price = marketData[ticker];
+
+    if (price) {
+      // If a price was found in the scraped data for a bond we track,
+      // we add an update operation to the batch.
+      console.log(
+        `[UPDATE] Scheduling update for ${ticker} with new price: ${price}`,
+      );
+      const bondRef = db.collection(BONDS_COLLECTION).doc(ticker);
+      batch.update(bondRef, {
+        'market_data.price': price,
+        'market_data.last_updated': new Date().toISOString(),
+        'market_data.source': 'IOL Scraper',
+      });
+      updatedCount++;
+    }
+  }
+
+  if (updatedCount > 0) {
+    console.log(`Committing batch with ${updatedCount} price updates...`);
+    await batch.commit();
+    console.log('Batch committed successfully.');
+  } else {
+    console.log('No price updates were needed.');
+  }
+
+  return { updatedCount };
 }
