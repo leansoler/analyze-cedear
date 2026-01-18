@@ -1,3 +1,8 @@
+// IMPORTANT: `puppeteer` is used for local development and debugging,
+// while `puppeteer-core` and `@sparticuz/chromium` are used for production.
+// However, due to how GCP builds the project, `puppeteer` is required in the
+// `dependencies` section of `package.json` to be available in the cloud
+// environment.
 import puppeteer from 'puppeteer';
 import puppeteerCore from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
