@@ -1,5 +1,4 @@
 import { getDolarRates } from '../../shared/clients/DolarAPIClient';
-import { getAssetPrices } from '../../shared/clients/YahooFinanceClient';
 import {
   calculateResidualValue,
   calculateXIRR,
@@ -22,17 +21,29 @@ import { PARITY_THRESHOLDS, VERDICT_STATUS } from '../../shared/constants';
  */
 export async function analyzeBondLogic(ticker: string): Promise<BondAnalysis> {
   // 1. Fetch all required data in parallel
-  const [bondData, , prices] = await Promise.all([
+  const [bondData, dolarRates] = await Promise.all([
     getBond(ticker),
     getDolarRates(),
-    getAssetPrices(ticker),
   ]);
 
   if (!bondData) {
     throw new Error(`Bond with ticker ${ticker} not found`);
   }
 
-  const { priceArs, priceUsd } = prices;
+  const priceArs = bondData.marketData?.price || 0;
+  const lastUpdated = bondData.marketData?.lastUpdated
+    ? new Date(bondData.marketData.lastUpdated)
+    : new Date();
+
+  if (priceArs === 0) {
+    // Soft error: return basic info with a warning, or throw if you prefer strictness.
+    throw new Error(
+      `Price not available for ${ticker}. Scraper may need to run.`,
+    );
+  }
+
+  const ccl = dolarRates.ccl_market;
+  const priceUsd = priceArs / ccl;
   const now = new Date();
 
   // 2. Separate past and future cashflows to calculate the current state of the bond
@@ -119,7 +130,7 @@ export async function analyzeBondLogic(ticker: string): Promise<BondAnalysis> {
     currency: bondData.currency,
     marketData: {
       price: priceArs,
-      lastUpdated: now.toISOString(),
+      lastUpdated: lastUpdated.toISOString(),
     },
     technicalAnalysis: {
       tirAnnualPercent: tir,
