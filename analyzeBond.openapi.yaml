@@ -48,10 +48,16 @@ components:
         type:
           type: string
           description: The type of the bond.
+          enum:
+            - Corporate Bond
+            - Sovereign Bond
           example: Corporate Bond
         currency:
           type: string
           description: The currency of the bond.
+          enum:
+            - USD
+            - ARS
           example: USD
         marketData:
           $ref: "#/components/schemas/MarketData"

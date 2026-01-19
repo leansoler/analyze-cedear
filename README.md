@@ -3,7 +3,7 @@
 A multi-function TypeScript project for analyzing Argentine financial assets, designed to be deployed as Google Cloud Functions (2nd Gen).
 
 - **`analyzeCedear`**: Calculates the implied "Contado con Liquidación" (CCL) exchange rate for a CEDEAR and compares it to a market rate.
-- **`analyzeBond`**: A placeholder for future bond analysis functionality.
+- **`analyzeBond`**: Provides a detailed analysis of a corporate bond, including its TIR, parity, and other key metrics.
 
 ---
 
@@ -44,6 +44,53 @@ curl -X POST <YOUR_FUNCTION_URL>/analyzeCedear \
 }
 ```
 
+### Analyze Bond
+
+- **Function Name**: `analyzeBond`
+- **Method**: `POST`
+- **Content-Type**: `application/json`
+
+#### Example Request
+
+```bash
+curl -X POST <YOUR_FUNCTION_URL>/analyzeBond \
+-H "Content-Type: application/json" \
+-d '{"ticker": "AL30"}'
+```
+
+#### Example Successful Response (200 OK)
+
+```json
+{
+  "ticker": "AL30",
+  "name": "BONO REP. ARG. LEY ARG. DOLAR STEP UP 2030",
+  "type": "Sovereign Bond",
+  "currency": "USD",
+  "marketData": {
+    "price": 50.00,
+    "lastUpdated": "2024-01-10T15:00:00Z"
+  },
+  "technicalAnalysis": {
+    "tirAnnualPercent": 25.5,
+    "parityPercent": 75.2,
+    "currentYieldPercent": 8.5,
+    "durationModified": 2.5,
+    "maturityDate": "2030-07-09"
+  },
+  "cashflowSummary": {
+    "paymentFrequency": "Semiannual",
+    "nextPaymentDate": "2025-01-09",
+    "nextPaymentAmountPer100": 1.75,
+    "residualValuePercent": 100
+  },
+  "verdict": {
+    "status": "Discount",
+    "riskLevel": "High",
+    "recommendation": "Buy"
+  }
+}
+```
+
 For a complete API contract, please see the `openapi.yaml` file.
 
 ---
@@ -62,7 +109,7 @@ Use the `npm run start:<function_name>` commands to run a specific function.
 # To run the CEDEAR analyzer
 npm run start:cedear
 
-# To run the bond analyzer (placeholder)
+# To run the bond analyzer
 npm run start:bond
 ```
 This starts a local server via the Google Cloud Functions Framework, typically on `http://localhost:8080`.

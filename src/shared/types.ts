@@ -32,9 +32,9 @@ export interface Bond {
   currency: 'USD' | 'ARS';
   faceValue: number;
   cashflow: CashflowItem[];
-  market_data?: {
+  marketData?: {
     price: number;
-    last_updated: string;
+    lastUpdated: string;
     source: string;
   };
 }
