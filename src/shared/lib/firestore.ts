@@ -110,9 +110,9 @@ export async function batchUpdateBondPrices(
       );
       const bondRef = db.collection(BONDS_COLLECTION).doc(ticker);
       batch.update(bondRef, {
-        'market_data.price': price,
-        'market_data.last_updated': new Date().toISOString(),
-        'market_data.source': 'IOL Scraper',
+        'marketData.price': price,
+        'marketData.lastUpdated': new Date().toISOString(),
+        'marketData.source': 'IOL Scraper',
       });
       updatedCount++;
     }
